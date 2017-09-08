@@ -1,0 +1,119 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-2.2.4/dt-1.10.15/r-2.1.1/datatables.min.css"/>
+</head>
+<body>
+
+  <div>
+    <h1>군수지원</h1>
+    <table id="supply-table" class="display compact">
+    </table>
+  </div>
+
+  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-2.2.4/dt-1.10.15/r-2.1.1/datatables.min.js"></script>
+  <script>
+  var renderItem = function(title) {
+    return function(val) {
+      return val == 1 ? title : " - ";
+    }
+  }
+  var renderTime = function(data) {
+      if (data < 60) {
+        return "00:" + data + ":00";
+      } else {
+        var h = (data / 60).toFixed(0);
+        var m = data % 60;
+        return (h < 10 ? "0"+h : h) + ":" + (m < 10 ? "0"+m : m) + ":00";
+      }
+  }
+
+  $(document).ready(function() {
+    var table = $("#supply-table").DataTable({
+      paging: false,
+      searching: false,
+      ajax: "./gf_supply.json",
+      columnDefs: [
+        {className: "dt-center", targets: [1, 9, 10, 11, 12, 13]},
+        {className: "dt-right", targets: [2,3,4,5,6,7,8]},
+        {searchable: false, orderable: false, targets: 0}
+      ],
+      order: [[1, 'asc']],
+      columns: [
+        {},
+        {
+          title: "전역",
+          data: 0
+        },
+        {
+          title: "리더 Lv",
+          data: 1
+        },
+        {
+          title: "제대 인원",
+          data: 2
+        },
+        {
+          title: "시간",
+          data: 3,
+          render: renderTime
+        },
+        {
+          title: "인력",
+          data: 4
+        },
+        {
+          title: "탄약",
+          data: 5
+        },
+        {
+          title: "식량",
+          data: 6
+        },
+        {
+          title: "부품",
+          data: 7
+        },
+        {
+          title: "자원/분",
+          render: function(data, type, row) {
+            return "0.0";
+          }
+        },
+        {
+          title: "인형제조계약",
+          data: 8,
+          render: renderItem("인형제조계약")
+        },
+        {
+          title: "장비제조계약",
+          data: 9,
+          render: renderItem("장비제조계약")
+        },
+        {
+          title: "쾌속제조계약",
+          data: 10,
+          render: renderItem("쾌속제조계약")
+        },
+        {
+          title: "쾌속수복계약",
+          data: 11,
+          render: renderItem("쾌속수복계약")
+        },
+        {
+          title: "구매토큰",
+          data: 12,
+          render: renderItem("구매토큰")
+        }
+      ]
+    });
+
+    table.on( 'order.dt search.dt', function () {
+        table.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+            cell.innerHTML = i+1;
+        } );
+    }).draw();
+  })
+  </script>
+</body>
+</html>
