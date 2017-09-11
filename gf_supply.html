@@ -1,18 +1,118 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-2.2.4/dt-1.10.15/r-2.1.1/datatables.min.css"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs-3.3.7/jq-2.2.4/dt-1.10.15/r-2.1.1/datatables.min.css"/>
+
+  <title>gf</title>
+
 </head>
 <body>
 
   <div>
-    <h1>군수지원</h1>
-    <table id="supply-table" class="display compact">
-    </table>
+    <div class="row">
+      <div class="col-md-10 col-md-offset-1">
+        <h1>군수지원</h1>
+        <div class="text-right">
+          <form class="form-inline">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" id="dataModeBtn"> 시간당 획득량으로 표시
+              </label>
+            </div>
+            <div class="form-group">
+              <label class="sr-only" for="minHour">최소 시간</label>
+              <input type="number" class="form-control" id="minHour" placeholder="0" min="0" max="23"> 시간 ~
+            </div>
+            <div class="form-group">
+              <label class="sr-only" for="maxHour">최대 시간</label>
+              <input type="number" class="form-control" id="maxHour" placeholder="0" min="0" max="23"> 시간
+            </div>
+            <div class="btn-group" data-toggle="buttons" id="ccBtns">
+              <label class="btn btn-default">
+                <input type="checkbox" autocomplete="off" data-idx="8"> 인형제조
+              </label>
+              <label class="btn btn-default">
+                <input type="checkbox" autocomplete="off" data-idx="9"> 장비제조
+              </label>
+              <label class="btn btn-default">
+                <input type="checkbox" autocomplete="off" data-idx="10"> 쾌속제조
+              </label>
+              <label class="btn btn-default">
+                <input type="checkbox" autocomplete="off" data-idx="11"> 쾌속수복
+              </label>
+              <label class="btn btn-default">
+                <input type="checkbox" autocomplete="off" data-idx="12"> 구매토큰
+              </label>
+            </div>
+            <button type="button" class="btn btn-danger" id="resetBtn">Reset</button>
+          </form>
+        </div>
+      </div><!-- col -->
+    </div> <!-- row -->
+
+    <div class="row">
+      <div class="col-md-10 col-md-offset-1">
+        <div class="small text-right">자원 합계 = 인력 + 탄약 + 식량 + 부품*3</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-10 col-md-offset-1">
+        <div>
+          <table id="supply-table" class="table table-striped table-hover table-condensed">
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-2.2.4/dt-1.10.15/r-2.1.1/datatables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/bs-3.3.7/jq-2.2.4/dt-1.10.15/r-2.1.1/datatables.min.js"></script>
   <script>
+  var supplyData = {
+    "comment": "/* 전역, 리더 레벨, 인원, 시간(분), 인력, 탄약, 식량, 부품, 장비제조, 인형제조, 쾌속제조, 쾌속수복, 구매토큰 */",
+    "data": [
+      ["0-1",40,4,50,0,145,145,0,0,0,1,1,0],
+      ["0-2",45,5,180,550,0,0,350,1,0,0,0,0],
+      ["0-3",45,5,720,900,900,900,250,0,1,0,1,0],
+      ["0-4",50,5,1440,0,1200,800,750,0,0,0,0,1],
+      ["1-1",1,2,15,10,30,15,0,0,0,0,0,0],
+      ["1-2",3,2,30,0,40,60,0,0,0,0,0,0],
+      ["1-3",5,3,60,30,0,30,10,0,0,0,1,0],
+      ["1-4",6,5,120,160,160,0,0,1,0,0,0,0],
+      ["2-1",5,3,40,100,0,0,30,0,0,0,0,0],
+      ["2-2",8,4,90,60,200,80,0,0,0,0,1,0],
+      ["2-3",10,5,240,10,10,10,230,0,0,1,1,0],
+      ["2-4",15,5,360,0,250,600,60,1,0,0,0,0],
+      ["3-1",12,4,20,50,0,75,0,0,0,0,0,0],
+      ["3-2",20,5,45,0,120,70,30,0,0,0,0,0],
+      ["3-3",15,4,90,0,300,0,0,0,0,1,1,0],
+      ["3-4",25,5,300,0,0,300,300,1,1,0,0,0],
+      ["4-1",30,4,60,0,185,185,0,0,1,0,0,0],
+      ["4-2",35,5,120,0,0,0,210,0,0,1,0,0],
+      ["4-3",40,5,360,800,550,0,0,1,0,0,1,0],
+      ["4-4",40,5,480,400,400,400,150,0,0,1,0,0],
+      ["5-1",30,4,30,0,0,100,45,0,0,0,0,0],
+      ["5-2",35,5,150,0,600,300,0,0,0,0,1,0],
+      ["5-3",40,5,240,800,400,400,0,0,1,0,0,0],
+      ["5-4",40,5,420,100,0,0,700,1,0,0,0,0],
+      ["6-1",35,5,120,300,300,0,100,0,0,0,0,0],
+      ["6-2",40,5,180,0,200,550,100,0,0,1,1,0],
+      ["6-3",45,5,300,0,0,200,500,0,1,0,0,0],
+      ["6-4",45,5,720,800,800,800,0,0,0,0,0,1],
+      ["7-1",40,5,150,650,0,650,0,0,0,0,0,0],
+      ["7-2",45,5,240,0,650,0,300,1,0,0,1,0],
+      ["7-3",50,5,330,900,600,600,0,0,1,0,0,0],
+      ["7-4",50,5,480,250,250,250,600,0,0,1,0,0],
+      ["8-1",45,5,60,150,150,150,0,0,1,0,0,0],
+      ["8-2",50,5,180,0,0,0,450,0,0,0,1,0],
+      ["8-3",55,5,360,400,800,800,0,0,0,1,1,0],
+      ["8-4",60,5,540,1500,400,400,0,1,0,0,0,0]
+    ]
+  }
+
   var renderItem = function(title) {
     return function(val) {
       return val == 1 ? title : " - ";
@@ -27,84 +127,38 @@
         return (h < 10 ? "0"+h : h) + ":" + (m < 10 ? "0"+m : m) + ":00";
       }
   }
+  var renderSum = function(data, type, row) {
+    return row[4] + row[5] + row[6] + (row[7]*3)
+  }
 
   $(document).ready(function() {
     var table = $("#supply-table").DataTable({
-      paging: false,
-      searching: false,
-      ajax: "./gf_supply.json",
-      columnDefs: [
-        {className: "dt-center", targets: [1, 9, 10, 11, 12, 13]},
-        {className: "dt-right", targets: [2,3,4,5,6,7,8]},
-        {searchable: false, orderable: false, targets: 0}
+      "paging": false,
+      "searching": false,
+      "data": supplyData.data,
+      "columnDefs": [
+        {className: "text-center", targets: [0, 1, 4, 9, 10, 11, 12, 13,14]},
+        {className: "text-right", targets: [2,3,5,6,7,8]},
+        {searchable: false, orderable: false, targets: 0},
+        {"orderSequence":["desc", "asc"], "targets": [5,6,7,8,9,10,11,12,13,14]}
       ],
-      order: [[1, 'asc']],
-      columns: [
+      "order": [[1, 'asc']],
+      "columns": [
         {},
-        {
-          title: "전역",
-          data: 0
-        },
-        {
-          title: "리더 Lv",
-          data: 1
-        },
-        {
-          title: "제대 인원",
-          data: 2
-        },
-        {
-          title: "시간",
-          data: 3,
-          render: renderTime
-        },
-        {
-          title: "인력",
-          data: 4
-        },
-        {
-          title: "탄약",
-          data: 5
-        },
-        {
-          title: "식량",
-          data: 6
-        },
-        {
-          title: "부품",
-          data: 7
-        },
-        {
-          title: "자원/분",
-          render: function(data, type, row) {
-            return "0.0";
-          }
-        },
-        {
-          title: "인형제조계약",
-          data: 8,
-          render: renderItem("인형제조계약")
-        },
-        {
-          title: "장비제조계약",
-          data: 9,
-          render: renderItem("장비제조계약")
-        },
-        {
-          title: "쾌속제조계약",
-          data: 10,
-          render: renderItem("쾌속제조계약")
-        },
-        {
-          title: "쾌속수복계약",
-          data: 11,
-          render: renderItem("쾌속수복계약")
-        },
-        {
-          title: "구매토큰",
-          data: 12,
-          render: renderItem("구매토큰")
-        }
+        {"title": "전역", "data": 0},
+        {title: "리더 Lv", data: 1},
+        {title: "제대 인원", data: 2},
+        {title: "시간", data: 3, render: renderTime},
+        {title: "인력", data: 4},
+        {title: "탄약", data: 5},
+        {title: "식량", data: 6},
+        {title: "부품", data: 7},
+        {title: "자원 합계", render: renderSum},
+        {title: "인형제조계약", data: 8, render: renderItem("인형제조계약")},
+        {title: "장비제조계약", data: 9, render: renderItem("장비제조계약")},
+        {title: "쾌속제조계약", data: 10, render: renderItem("쾌속제조계약")},
+        {title: "쾌속수복계약", data: 11, render: renderItem("쾌속수복계약")},
+        {title: "구매토큰", data: 12, render: renderItem("구매토큰")}
       ]
     });
 
@@ -113,6 +167,66 @@
             cell.innerHTML = i+1;
         } );
     }).draw();
+
+    var reloadTable = function(data) {
+      table.clear();
+      table.rows.add(data);
+      table.draw();
+    }
+
+    $("#resetBtn").click(function() {
+      reloadTable(supplyData.data);
+    })
+
+    var rh = function(v, m) {
+      return (v == 0) ? 0 : Number((v/m*60).toFixed(0));
+    }
+
+    $("#dataModeBtn").click(function() {
+      if (this.checked) {
+        reloadTable(supplyData.data.map(function(v, i, a) {
+          var r = v.slice();
+          r[4] = rh(v[4], v[3]);
+          r[5] = rh(v[5], v[3]);
+          r[6] = rh(v[6], v[3]);
+          r[7] = rh(v[7], v[3]);
+          return r;
+        }))
+      } else {
+        reloadTable(supplyData.data)
+      }
+    });
+
+    var ccContains = function(v) {
+      var cc = [];
+      $("#ccBtns label input").each(function() {
+        if ($(this).is(":checked")) {
+          cc.push($(this).data("idx"));
+        }
+      })
+      if (cc.length == 0) return true;
+      for (i = 8; i < 13; i++) {
+        if (cc.indexOf(i) != -1 && v[i] == 1) return true;
+      }
+      return false;
+    }
+
+    var filterData = function() {
+      var minh = $("#minHour").val() ? $("#minHour").val() : 0;
+      var maxh = $("#maxHour").val() ? $("#maxHour").val() : 24;
+
+      reloadTable(supplyData.data
+        .filter(v => v[3] >= minh*60)
+        .filter(v => v[3] <= maxh*60)
+        .filter(v => ccContains(v))
+      )
+    }
+
+    $("#minHour").blur(filterData);
+    $("#maxHour").blur(filterData);
+
+    $("#ccBtns label input").change(filterData)
+
   })
   </script>
 </body>
