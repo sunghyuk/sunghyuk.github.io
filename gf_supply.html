@@ -182,21 +182,6 @@
       return (v == 0) ? 0 : Number((v/m*60).toFixed(0));
     }
 
-    $("#dataModeBtn").click(function() {
-      if (this.checked) {
-        reloadTable(supplyData.data.map(function(v, i, a) {
-          var r = v.slice();
-          r[4] = rh(v[4], v[3]);
-          r[5] = rh(v[5], v[3]);
-          r[6] = rh(v[6], v[3]);
-          r[7] = rh(v[7], v[3]);
-          return r;
-        }))
-      } else {
-        reloadTable(supplyData.data)
-      }
-    });
-
     var ccContains = function(v) {
       var cc = [];
       $("#ccBtns label input").each(function() {
@@ -219,8 +204,22 @@
         .filter(v => v[3] >= minh*60)
         .filter(v => v[3] <= maxh*60)
         .filter(v => ccContains(v))
+        .map(function(v, i, a) {
+          if ($("#dataModeBtn").is(":checked")) {
+            var r = v.slice();
+            r[4] = rh(v[4], v[3]);
+            r[5] = rh(v[5], v[3]);
+            r[6] = rh(v[6], v[3]);
+            r[7] = rh(v[7], v[3]);
+            return r;
+          } else {
+            return v;
+          }
+        })
       )
     }
+
+    $("#dataModeBtn").click(filterData);
 
     $("#minHour").blur(filterData);
     $("#maxHour").blur(filterData);
