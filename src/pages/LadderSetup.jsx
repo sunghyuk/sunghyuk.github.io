@@ -1,8 +1,17 @@
 // src/pages/LadderSetup.jsx
 import React, { useState } from 'react';
-import LadderGame from './LadderGame';
+import { useNavigate } from 'react-router-dom';
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
 export default function LadderSetup() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [inputNames, setInputNames] = useState(["", "", ""]);
   const [inputResults, setInputResults] = useState(["", "", ""]);
@@ -57,10 +66,21 @@ export default function LadderSetup() {
         ))}
 
         <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+        <button onClick={() => {
+            const count = inputNames.length;
+            const randomNames = Array.from({ length: count }, (_, i) => `참가자${i + 1}`);
+            const randomResults = Array.from({ length: count }, (_, i) => `${i + 1}등`);
+            setInputNames(randomNames);
+            setInputResults(randomResults);
+          }}>🎲 랜덤 채우기</button>
           <button onClick={handleAdd} disabled={inputNames.length >= 10}>➕ 추가</button>
           <button onClick={handleRemove} disabled={inputNames.length <= 3}>➖ 제거</button>
           <button
-            onClick={() => setStep(2)}
+            onClick={() =>
+              navigate('/ladder/game', {
+                state: { participants: inputNames, results: shuffle([...inputResults]) },
+              })
+            }
             disabled={inputNames.some(n => !n) || inputResults.some(r => !r)}
           >
             ▶️ 다음
@@ -70,6 +90,8 @@ export default function LadderSetup() {
     );
   }
 
-  return <LadderGame participants={inputNames} results={inputResults} />;
+  return null;
 }
+
+
 

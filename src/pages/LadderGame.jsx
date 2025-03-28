@@ -1,12 +1,20 @@
 // src/pages/LadderGame.jsx
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { useLocation } from 'react-router-dom';
 
 export default function LadderGame() {
-  const participants = ["A", "B", "C", "D", "E", "F", "G", "H"];
+  const { state } = useLocation();
+  const participants = state?.participants || [];
+  const initialResults = state?.results || [];
+
+  const navigate = useNavigate();
+
   const [ladder, setLadder] = useState(generateLadder(participants.length));
   const [path, setPath] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
-  const [results, setResults] = useState(shuffle([...Array(participants.length).keys()].map(n => `${n + 1}등`)));
+  const [results, setResults] = useState(shuffle([...initialResults]));
   const [revealedIndexes, setRevealedIndexes] = useState(new Set());
   const [history, setHistory] = useState([]);
 
@@ -163,6 +171,10 @@ export default function LadderGame() {
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', flexWrap: 'wrap', marginTop: '2rem' }}>
+        <button onClick={() => navigate('/ladder')}>
+          ⬅️ 돌아가기
+        </button>
+
         <button onClick={() => {
           setLadder(generateLadder(participants.length));
           setPath([]);
@@ -213,8 +225,8 @@ function generateLadder(cols) {
   const usedByHeight = Array.from({ length: cols - 1 }, () => new Set());
 
   for (let y = 0; y < cols - 1; y++) {
-    const minRungs = 3;
-    const maxRungs = cols - 2;
+    const minRungs = Math.max(3, cols);
+    const maxRungs = Math.max(minRungs + 1, cols + 2);
     const target = Math.floor(Math.random() * (maxRungs - minRungs + 1)) + minRungs;
     let count = 0;
     let attempts = 0;
@@ -243,4 +255,5 @@ function shuffle(array) {
   }
   return array;
 }
+
 
