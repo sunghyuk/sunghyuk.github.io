@@ -1,0 +1,21 @@
+# dependencies
+/node_modules
+
+# production
+/dist
+
+# local env files
+.env.local
+.env.*.local
+
+# Vite cache
+/.vite
+
+# IDEs and editors
+.vscode
+.idea
+.DS_Store
+
+# macOS & system
+Thumbs.db
+
