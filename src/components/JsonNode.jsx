@@ -13,18 +13,20 @@ const renderValue = (val) => {
 
 const JsonNode = ({ data, level }) => {
     const [collapsed, setCollapsed] = useState(false);
-    const indent = level * 16; // px
+    const indent = level * 16;
 
     if (!isObject(data)) {
-        return (
-            <span>{renderValue(data)}</span>
-        );
+        return <span>{renderValue(data)}</span>;
     }
 
-    const entries = Object.entries(data);
+    const entries = Array.isArray(data)
+        ? data.map((val, i) => [i, val])
+        : Object.entries(data);
+
     const isArray = Array.isArray(data);
     const bracketOpen = isArray ? '[' : '{';
     const bracketClose = isArray ? ']' : '}';
+    const lastIndex = entries.length - 1;
 
     return (
         <div style={{ fontFamily: 'monospace', lineHeight: '1.6' }}>
@@ -32,30 +34,32 @@ const JsonNode = ({ data, level }) => {
                 onClick={() => setCollapsed(!collapsed)}
                 style={{ cursor: 'pointer', color: '#3b82f6', fontWeight: 'bold', marginLeft: indent }}
             >
-                {collapsed ? `▸ ${bracketOpen}...${bracketClose}` : `▾ ${bracketOpen}`}
+                {collapsed ? `▸ ${bracketOpen}...${bracketClose}` : `▾`}
             </div>
             {!collapsed && (
-                <div style={{ marginLeft: indent + 16 }}>
-                    {isArray ? (
-                        entries.map(([_, value], index) => (
-                            <div key={index} style={{ display: 'inline' }}>
-                                <JsonNode data={value} level={level + 1} />{index < entries.length - 1 ? ', ' : ''}
-                            </div>
-                        ))
-                    ) : (
-                        entries.map(([key, value], index) => (
-                            <div key={index}>
-                                <span style={{ color: '#8b5cf6' }}>&quot;{key}&quot;: </span>
-                                {isObject(value) ? (
-                                    <JsonNode data={value} level={level + 1} />
-                                ) : (
-                                    renderValue(value)
+                <div style={{ marginLeft: indent }}>
+                    <div>{bracketOpen}</div>
+                    <div style={{ marginLeft: 16 }}>
+                        {entries.map(([key, value], index) => (
+                            <div key={index} style={{ display: 'flex' }}>
+                                {!isArray && (
+                                    <span style={{ color: '#8b5cf6' }}>&quot;{key}&quot;: </span>
                                 )}
-                                {index < entries.length - 1 ? ',' : ''}
+                                <div>
+                                    {isObject(value) ? (
+                                        <JsonNode data={value} level={level + 1} />
+                                    ) : (
+                                        renderValue(value)
+                                    )}
+                                    {index < lastIndex ? <span>,</span> : null}
+                                </div>
                             </div>
-                        ))
-                    )}
-                    <span>{bracketClose}</span>
+                        ))}
+                    </div>
+                    <div>
+                        {bracketClose}
+                        {/* Only put comma here for object/array wrapper */}
+                    </div>
                 </div>
             )}
         </div>
