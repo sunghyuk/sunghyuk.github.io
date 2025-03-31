@@ -1,5 +1,5 @@
 // src/components/JsonNode.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const isObject = val => typeof val === 'object' && val !== null;
 
@@ -11,9 +11,14 @@ const renderValue = (val) => {
     return <span>{JSON.stringify(val)}</span>;
 };
 
-const JsonNode = ({ data, level }) => {
+const JsonNode = ({ data, level, expandAll = false, collapseAll = false }) => {
     const [collapsed, setCollapsed] = useState(false);
     const indent = level * 16;
+
+    useEffect(() => {
+        if (expandAll) setCollapsed(false);
+        if (collapseAll) setCollapsed(true);
+    }, [expandAll, collapseAll]);
 
     if (!isObject(data)) {
         return <span>{renderValue(data)}</span>;
@@ -47,7 +52,7 @@ const JsonNode = ({ data, level }) => {
                                 )}
                                 <div>
                                     {isObject(value) ? (
-                                        <JsonNode data={value} level={level + 1} />
+                                        <JsonNode data={value} level={level + 1} expandAll={expandAll} collapseAll={collapseAll} />
                                     ) : (
                                         renderValue(value)
                                     )}
@@ -58,7 +63,6 @@ const JsonNode = ({ data, level }) => {
                     </div>
                     <div>
                         {bracketClose}
-                        {/* Only put comma here for object/array wrapper */}
                     </div>
                 </div>
             )}
