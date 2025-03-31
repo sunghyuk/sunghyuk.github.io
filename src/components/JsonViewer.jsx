@@ -18,13 +18,25 @@ const JsonViewer = ({ data }) => {
         setTimeout(() => setCollapseAll(false), 0);
     };
 
+    const handleCopy = (text) => {
+        navigator.clipboard.writeText(text).then(() => {
+            console.log('Copied:', text);
+        });
+    };
+
     return (
         <div style={{ fontFamily: 'monospace', fontSize: '14px' }}>
             <div style={{ marginBottom: '0.5rem' }}>
                 <button onClick={handleExpand} style={{ marginRight: '0.5rem' }}>Expand All</button>
-                <button onClick={handleCollapse}>Collapse All</button>
+                <button onClick={handleCollapse} style={{ marginRight: '0.5rem' }}>Collapse All</button>
             </div>
-            <JsonNode data={data} level={0} expandAll={expandAll} collapseAll={collapseAll} />
+            <JsonNode
+                data={data}
+                level={0}
+                expandAll={expandAll}
+                collapseAll={collapseAll}
+                onCopy={handleCopy}
+            />
         </div>
     );
 };
