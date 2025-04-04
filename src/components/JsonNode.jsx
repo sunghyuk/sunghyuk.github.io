@@ -27,10 +27,9 @@ const Toast = ({ message }) => (
     </div>
 );
 
-const JsonNode = ({ data, level, expandAll = false, collapseAll = false, onCopy }) => {
+const JsonNode = ({ data, level, expandAll = false, collapseAll = false, onCopy, path = '$' }) => {
     const [collapsed, setCollapsed] = useState(false);
     const [toast, setToast] = useState(null);
-    const indent = level * 16;
 
     useEffect(() => {
         if (expandAll) setCollapsed(false);
@@ -68,32 +67,49 @@ const JsonNode = ({ data, level, expandAll = false, collapseAll = false, onCopy 
         <div style={{ fontFamily: 'monospace', lineHeight: '1.6' }}>
             <div
                 onClick={() => setCollapsed(!collapsed)}
-                style={{ cursor: 'pointer', color: '#3b82f6', fontWeight: 'bold', marginLeft: indent }}
+                style={{ cursor: 'pointer', color: '#3b82f6', fontWeight: 'bold', paddingLeft: `${level * 16}px` }}
             >
                 {collapsed ? `▸ ${bracketOpen}...${bracketClose}` : `▾`}
             </div>
             {!collapsed && (
-                <div style={{ marginLeft: indent }}>
-                    <div>{bracketOpen}</div>
-                    <div style={{ marginLeft: 16 }}>
-                        {entries.map(([key, value], index) => (
-                            <div key={index} style={{ display: 'flex' }}>
+                <div>
+                    <div style={{ paddingLeft: `${level * 16}px` }}>{bracketOpen}</div>
+                    {entries.map(([key, value], index) => {
+                        const currentPath = isArray ? `${path}[${key}]` : `${path}.${key}`;
+                        const valueIsObject = isObject(value);
+
+                        return (
+                            <div key={index} style={{ paddingLeft: `${(level + 1) * 16}px` }}>
                                 {!isArray && (
-                                    <span
-                                        style={{ color: '#8b5cf6', cursor: onCopy ? 'pointer' : 'default' }}
-                                        onClick={() => handleCopy(key)}
-                                    >
-                                        &quot;{key}&quot;:
+                                    <span style={{ display: 'inline-block' }}>
+                                        <span
+                                            style={{ color: '#8b5cf6', cursor: onCopy ? 'pointer' : 'default' }}
+                                            onClick={() => handleCopy(key)}
+                                        >
+                                            &quot;{key}&quot;:
+                                        </span>
+                                        <span
+                                            title={`Copy path: ${currentPath}`}
+                                            style={{ color: '#999', marginLeft: 6, fontSize: '0.75rem', cursor: 'pointer' }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleCopy(currentPath);
+                                            }}
+                                        >
+                                            ⓘ
+                                        </span>
                                     </span>
                                 )}
-                                <div style={{ marginLeft: 4 }}>
-                                    {isObject(value) ? (
+                                {' '}
+                                <span>
+                                    {valueIsObject ? (
                                         <JsonNode
                                             data={value}
                                             level={level + 1}
                                             expandAll={expandAll}
                                             collapseAll={collapseAll}
                                             onCopy={onCopy}
+                                            path={currentPath}
                                         />
                                     ) : (
                                         <span
@@ -104,11 +120,11 @@ const JsonNode = ({ data, level, expandAll = false, collapseAll = false, onCopy 
                                         </span>
                                     )}
                                     {index < lastIndex ? <span>,</span> : null}
-                                </div>
+                                </span>
                             </div>
-                        ))}
-                    </div>
-                    <div>{bracketClose}</div>
+                        );
+                    })}
+                    <div style={{ paddingLeft: `${level * 16}px` }}>{bracketClose}</div>
                 </div>
             )}
             {toast && <Toast message={toast} />}
