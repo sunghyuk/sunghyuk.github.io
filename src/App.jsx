@@ -7,6 +7,7 @@ import LadderGame from './pages/LadderGame';
 import LadderSetup from './pages/LadderSetup';
 import Base64Tool from './pages/Base64Tool';
 import JsonViewerPage from './pages/JsonViewerPage';
+import UnixTimeConverter from './pages/UnixTimeConverter';
 
 export default function App() {
     return (
@@ -15,7 +16,8 @@ export default function App() {
                 <Link to="/" style={{ marginRight: '1rem' }}>🏠 Home</Link>
                 <Link to="/ladder" style={{ marginRight: '1rem' }}>🪜 Ladder Game</Link>
                 <Link to="/base64" style={{ marginRight: '1rem' }}>🔐 Base64 Tool</Link>
-                <Link to="/json">🧾 JSON Viewer</Link>
+                <Link to="/json" style={{ marginRight: '1rem' }}>🧾 JSON Viewer</Link>
+                <Link to="/unix">⏱️ Unix Time Converter</Link>
             </nav>
             <main style={{ padding: '2rem' }}>
                 <Routes>
@@ -24,6 +26,7 @@ export default function App() {
                     <Route path="/ladder/game" element={<LadderGame />} />
                     <Route path="/base64" element={<Base64Tool />} />
                     <Route path="/json" element={<JsonViewerPage />} />
+                    <Route path="/unix" element={<UnixTimeConverter />} />
                 </Routes>
             </main>
         </div>
